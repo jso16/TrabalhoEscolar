@@ -1,0 +1,93 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #2e3c8a;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#form-container {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#clientes-container {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+#clientes-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#clientes-table th,
+#clientes-table td {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+#clientes-table th {
+    text-align: left;
+}
+
+#export-btn {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#export-btn:hover {
+    background-color: #218838;
+}
+
+#clientes-table td {
+    max-width:85px; /* Defina a largura máxima desejada */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#clientes-list .hovered {
+    background-color: #d5ecf7e8; /* Altere para a cor desejada ao passar o

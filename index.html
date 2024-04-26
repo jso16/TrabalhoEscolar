@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Pessoas</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Cadastro de Pessoas</h1>
+        <div id="senha-container">
+            <label for="senha">Senha de Desbloqueio:</label>
+            <input type="password" id="senha">
+            <br><br> <!-- Adicionado mais espaço -->
+            <button type="button" id="desbloquear-btn">Desbloquear</button>
+        </div>
+        <div id="form-container">
+            <form id="cliente-form">
+                <input type="text" id="nome" placeholder="Nome Completo" disabled>
+                <input type="text" id="cpf" placeholder="CPF" disabled>
+                <input type="email" id="email" placeholder="E-mail" disabled>
+                <input type="tel" id="telefone" placeholder="Telefone" disabled>
+                <input type="text" id="endereco" placeholder="Endereço" disabled>
+                <input type="text" id="cidade" placeholder="Cidade" disabled>
+                <input type="text" id="estado" placeholder="Estado" disabled>
+                <button type="submit" disabled>Cadastrar</button>
+            </form>
+            <button id="export-btn" disabled>Exportar para .xlsx</button>
+            <input type="file" id="import-btn" accept=".xlsx" disabled> <!-- Importar arquivo html-->
+        </div>
+        <div id="clientes-container">
+            <button id="pesquisar-cpf-btn" disabled>Pesquisar por CPF</button>
+            <table id="clientes-table">
+                <thead>
+                    <tr>
+                        <th>CPF</th>
+                        <th>Nome Completo</th>
+                        <th>E-mail</th>
+                        <th>Telefone</th>
+                        <th>Endereço</th>
+                        <th>Cidade</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="clientes-list"></tbody>
+            </table>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

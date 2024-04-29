@@ -4,8 +4,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const senhaContainer = document.getElementById("senha-container");
     let senhaDesbloqueada = false;
     let storedClientes = JSON.parse(localStorage.getItem("clientes")) || [];
-    const telegramToken = 'SEU_TOKEN_DO_BOT';
-    const telegramChatId = 'ID_DO_CHAT';
 
     document.getElementById("desbloquear-btn").addEventListener("click", function() {
         desbloquearComSenha();
@@ -136,32 +134,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    document.getElementById("enviar-feedback-btn").addEventListener("click", function() {
-        const feedbackMessage = document.getElementById("feedback-message").value;
-
-        fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                chat_id: telegramChatId,
-                text: feedbackMessage
-            })
-        })
-        .then(response => {
-            if (response.ok) {
-                alert("Feedback enviado com sucesso para o Telegram!");
-            } else {
-                alert("Não foi possivel enviar a mensagem, ainda é necessário a configuração de uma API para o funcionamento seguro desta função.");
-            }
-        })
-        .catch(error => {
-            console.error('Erro ao enviar feedback para o Telegram:', error);
-            alert(Não foi possivel enviar a mensagem, ainda é necessário a configuração de uma API para o funcionamento seguro desta função.");
-        });
-    });
-
     function mostrarTodosClientes() {
         const rows = clientesList.querySelectorAll("tr");
         rows.forEach(row => {
@@ -242,5 +214,4 @@ document.addEventListener("DOMContentLoaded", function() {
         `;
         return newRow;
     }
-    
 });

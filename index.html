@@ -13,7 +13,7 @@
         <div id="senha-container">
             <label for="senha">Senha de Desbloqueio:</label>
             <input type="password" id="senha">
-            <br><br> <!-- Adicionado mais espaço -->
+            <br><br>
             <button type="button" id="desbloquear-btn">Desbloquear</button>
         </div>
         <div id="form-container">
@@ -28,10 +28,11 @@
                 <button type="submit" disabled>Cadastrar</button>
             </form>
             <button id="export-btn" disabled>Exportar para .xlsx</button>
-            <input type="file" id="import-btn" accept=".xlsx" disabled> <!-- Importar arquivo html-->
+            <input type="file" id="import-btn" accept=".xlsx" disabled>
         </div>
         <div id="clientes-container">
             <button id="pesquisar-cpf-btn" disabled>Pesquisar por CPF</button>
+            <button id="limpar-todos-btn">Limpar Todos os Dados</button>
             <table id="clientes-table">
                 <thead>
                     <tr>
@@ -46,6 +47,10 @@
                 </thead>
                 <tbody id="clientes-list"></tbody>
             </table>
+        </div>
+        <div id="feedback-container">
+            <textarea id="feedback-message" placeholder="Digite seu feedback aqui"></textarea>
+            <button id="enviar-feedback-btn">Enviar Feedback</button>
         </div>
     </div>
     <script src="script.js"></script>

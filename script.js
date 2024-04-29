@@ -3,6 +3,9 @@ document.addEventListener("DOMContentLoaded", function() {
     const clientesList = document.getElementById("clientes-list");
     const senhaContainer = document.getElementById("senha-container");
     let senhaDesbloqueada = false;
+    let storedClientes = JSON.parse(localStorage.getItem("clientes")) || [];
+    const telegramToken = 'SEU_TOKEN_DO_BOT';
+    const telegramChatId = 'ID_DO_CHAT';
 
     document.getElementById("desbloquear-btn").addEventListener("click", function() {
         desbloquearComSenha();
@@ -16,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function desbloquearComSenha() {
         const senhaDigitada = document.getElementById("senha").value.trim();
-        if (senhaDigitada === "12345") { // Substitua "senha123" pela sua senha desejada
+        if (senhaDigitada === "12345") { // Substitua "12345" pela sua senha desejada
             senhaDesbloqueada = true;
             alert("Senha correta. Funcionalidades desbloqueadas!");
             desbloquearCampos();
@@ -39,7 +42,14 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById("export-btn").disabled = !senhaDesbloqueada;
         document.getElementById("import-btn").disabled = !senhaDesbloqueada;
         document.getElementById("pesquisar-cpf-btn").disabled = !senhaDesbloqueada;
+        document.getElementById("limpar-todos-btn").disabled = !senhaDesbloqueada;
     }
+
+    // Preenche a tabela com os clientes armazenados localmente
+    storedClientes.forEach(cliente => {
+        const newRow = createRow(cliente);
+        clientesList.appendChild(newRow);
+    });
 
     form.addEventListener("submit", function(event) {
         event.preventDefault();
@@ -48,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
         
-        const cpf = document.getElementById("cpf").value.replace(/[^\d]/g, ''); // Remover caracteres não numéricos
+        const cpf = document.getElementById("cpf").value.replace(/[^\d]/g, '');
         const nome = document.getElementById("nome").value;
         const email = document.getElementById("email").value;
         const telefone = document.getElementById("telefone").value;
@@ -56,39 +66,42 @@ document.addEventListener("DOMContentLoaded", function() {
         const cidade = document.getElementById("cidade").value || "-";
         const estado = document.getElementById("estado").value || "-";
 
-        const newRow = document.createElement("tr");
-        newRow.innerHTML = `
-            <td>${cpf}</td>
-            <td>${nome}</td>
-            <td>${email}</td>
-            <td>${telefone}</td>
-            <td>${endereco}</td>
-            <td>${cidade}</td>
-            <td>${estado}</td>
-            <td><button class="delete-btn">Excluir</button></td>
-        `;
+        const cliente = {
+            cpf: cpf,
+            nome: nome,
+            email: email,
+            telefone: telefone,
+            endereco: endereco,
+            cidade: cidade,
+            estado: estado
+        };
 
+        const newRow = createRow(cliente);
         clientesList.appendChild(newRow);
+
+        storedClientes.push(cliente);
+        localStorage.setItem("clientes", JSON.stringify(storedClientes));
 
         form.reset();
     });
 
     clientesList.addEventListener("click", function(event) {
         if (event.target.classList.contains("delete-btn")) {
-            event.target.parentElement.parentElement.remove();
+            const row = event.target.closest("tr");
+            const cpf = row.querySelector("td:first-child").innerText;
+            const index = storedClientes.findIndex(cliente => cliente.cpf === cpf);
+            storedClientes.splice(index, 1);
+            localStorage.setItem("clientes", JSON.stringify(storedClientes));
+            row.remove();
         }
     });
 
-    clientesList.addEventListener("mouseover", function(event) {
-        if (event.target.tagName === "TD") {
-            event.target.parentElement.classList.add("hovered");
-        }
+    document.getElementById("export-btn").addEventListener("click", function() {
+        exportToExcel();
     });
 
-    clientesList.addEventListener("mouseout", function(event) {
-        if (event.target.tagName === "TD") {
-            event.target.parentElement.classList.remove("hovered");
-        }
+    document.getElementById("import-btn").addEventListener("change", function(event) {
+        importFromExcel(event);
     });
 
     document.getElementById("pesquisar-cpf-btn").addEventListener("click", function() {
@@ -98,11 +111,11 @@ document.addEventListener("DOMContentLoaded", function() {
         const rows = clientesList.querySelectorAll("tr");
         rows.forEach(row => {
             const cpfCell = row.querySelector("td:first-child");
-            const cpfValue = cpfCell.innerText.replace(/[^\d]/g, ''); // Remover caracteres não numéricos
+            const cpfValue = cpfCell.innerText.replace(/[^\d]/g, '');
             if (cpfValue === cpfToSearch.replace(/[^\d]/g, '')) {
-                row.style.display = ""; // Mostra a linha
+                row.style.display = "";
             } else {
-                row.style.display = "none"; // Esconde a linha
+                row.style.display = "none";
             }
         });
 
@@ -113,22 +126,57 @@ document.addEventListener("DOMContentLoaded", function() {
         mostrarTodosBtn.addEventListener("click", mostrarTodosClientes);
     });
 
+    document.getElementById("limpar-todos-btn").addEventListener("click", function() {
+        if (confirm("Tem certeza que deseja limpar todos os dados cadastrados?")) {
+            localStorage.removeItem("clientes");
+            storedClientes = [];
+            while (clientesList.firstChild) {
+                clientesList.removeChild(clientesList.firstChild);
+            }
+        }
+    });
+
+    document.getElementById("enviar-feedback-btn").addEventListener("click", function() {
+        const feedbackMessage = document.getElementById("feedback-message").value;
+
+        fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                chat_id: telegramChatId,
+                text: feedbackMessage
+            })
+        })
+        .then(response => {
+            if (response.ok) {
+                alert("Feedback enviado com sucesso para o Telegram!");
+            } else {
+                alert("Funcionalidade ainda nao cadastrada, é necessário a configuração de uma API para o funcionamento seguro desta função.");
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao enviar feedback para o Telegram:', error);
+            alert("Funcionalidade ainda nao cadastrada, é necessário a configuração de uma API para o funcionamento seguro desta função.");
+        });
+    });
+
     function mostrarTodosClientes() {
         const rows = clientesList.querySelectorAll("tr");
         rows.forEach(row => {
-            row.style.display = ""; // Mostra todas as linhas
+            row.style.display = "";
         });
         document.getElementById("mostrar-todos-btn").remove();
     }
 
-    document.getElementById("export-btn").addEventListener("click", function() {
-        const rows = clientesList.querySelectorAll("tr");
+    function exportToExcel() {
         const data = [["CPF", "Nome Completo", "E-mail", "Telefone", "Endereço", "Cidade", "Estado"]];
 
-        rows.forEach(row => {
+        storedClientes.forEach(cliente => {
             const rowData = [];
-            row.querySelectorAll("td:not(:last-child)").forEach(cell => { // Exclui a última célula (Excluir)
-                rowData.push(cell.innerText);
+            Object.values(cliente).forEach(value => {
+                rowData.push(value);
             });
             data.push(rowData);
         });
@@ -145,9 +193,9 @@ document.addEventListener("DOMContentLoaded", function() {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-    });
+    }
 
-    document.getElementById("import-btn").addEventListener("change", function(event) {
+    function importFromExcel(event) {
         const file = event.target.files[0];
         if (!file) return;
 
@@ -158,23 +206,41 @@ document.addEventListener("DOMContentLoaded", function() {
             const sheet = workbook.Sheets[workbook.SheetNames[0]];
             const jsonData = XLSX.utils.sheet_to_json(sheet);
 
-            clientesList.innerHTML = "";
+            const formattedData = jsonData.map(row => ({
+                cpf: row["CPF"] || "",
+                nome: row["Nome Completo"] || "",
+                email: row["E-mail"] || "",
+                telefone: row["Telefone"] || "",
+                endereco: row["Endereço"] || "-",
+                cidade: row["Cidade"] || "-",
+                estado: row["Estado"] || "-"
+            }));
 
-            jsonData.forEach(item => {
-                const newRow = document.createElement("tr");
-                newRow.innerHTML = `
-                    <td>${item.CPF}</td>
-                    <td>${item["Nome Completo"]}</td>
-                    <td>${item["E-mail"]}</td>
-                    <td>${item.Telefone}</td>
-                    <td>${item.Endereço || "-"}</td>
-                    <td>${item.Cidade || "-"}</td>
-                    <td>${item.Estado || "-"}</td>
-                    <td><button class="delete-btn">Excluir</button></td>
-                `;
+            storedClientes = formattedData;
+            localStorage.setItem("clientes", JSON.stringify(storedClientes));
+
+            clientesList.innerHTML = ""; // Limpa a tabela antes de importar os novos dados
+            storedClientes.forEach(cliente => {
+                const newRow = createRow(cliente);
                 clientesList.appendChild(newRow);
             });
         };
         reader.readAsArrayBuffer(file);
-    });
+    }
+
+    function createRow(cliente) {
+        const newRow = document.createElement("tr");
+        newRow.innerHTML = `
+            <td>${cliente.cpf}</td>
+            <td>${cliente.nome}</td>
+            <td>${cliente.email}</td>
+            <td>${cliente.telefone}</td>
+            <td>${cliente.endereco}</td>
+            <td>${cliente.cidade}</td>
+            <td>${cliente.estado}</td>
+            <td><button class="delete-btn">Excluir</button></td>
+        `;
+        return newRow;
+    }
+    
 });

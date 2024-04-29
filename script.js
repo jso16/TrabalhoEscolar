@@ -153,12 +153,12 @@ document.addEventListener("DOMContentLoaded", function() {
             if (response.ok) {
                 alert("Feedback enviado com sucesso para o Telegram!");
             } else {
-                alert("Funcionalidade ainda nao cadastrada, é necessário a configuração de uma API para o funcionamento seguro desta função.");
+                alert("Não foi possivel enviar a mensagem, ainda é necessário a configuração de uma API para o funcionamento seguro desta função.");
             }
         })
         .catch(error => {
             console.error('Erro ao enviar feedback para o Telegram:', error);
-            alert("Funcionalidade ainda nao cadastrada, é necessário a configuração de uma API para o funcionamento seguro desta função.");
+            alert(Não foi possivel enviar a mensagem, ainda é necessário a configuração de uma API para o funcionamento seguro desta função.");
         });
     });
 

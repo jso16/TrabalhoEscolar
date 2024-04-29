@@ -88,7 +88,7 @@ button:hover {
 }
 
 #clientes-table td {
-    max-width: 85px; /* Defina a largura máxima desejada */
+    max-width: 20%; /* Defina a largura máxima desejada */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

@@ -6,11 +6,12 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 150vh;
+    min-height: 100vh; /* Ajusta a altura mínima para cobrir toda a altura da tela */
 }
 
 .container {
-    max-width: 800px;
+    width: 90%; /* Ajusta a largura para 90% da largura do viewport */
+    max-width: 800px; /* Define uma largura máxima para o conteúdo */
     margin: 20px auto;
     background-color: #fff;
     padding: 20px;
@@ -87,11 +88,12 @@ button:hover {
 }
 
 #clientes-table td {
-    max-width:85px; /* Defina a largura máxima desejada */
+    max-width: 85px; /* Defina a largura máxima desejada */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 #clientes-list .hovered {
-    background-color: #d5ecf7e8; /* Altere para a cor desejada ao passar o
+    background-color: #d5ecf7e8; /* Altere para a cor desejada ao passar o mouse */
+}

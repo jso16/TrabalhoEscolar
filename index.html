@@ -23,30 +23,42 @@
                 <input type="email" id="email" placeholder="E-mail" disabled>
                 <input type="tel" id="telefone" placeholder="Telefone" disabled>
                 <input type="text" id="endereco" placeholder="Endereço" disabled>
+                <input type="text" id="bairro" placeholder="Bairro" disabled>
+                <input type="text" id="cep" placeholder="CEP" disabled>
                 <input type="text" id="cidade" placeholder="Cidade" disabled>
                 <input type="text" id="estado" placeholder="Estado" disabled>
+                <input type="date" id="data" placeholder="Data" disabled>
+                <input type="time" id="hora" placeholder="Hora" disabled>
                 <button type="submit" disabled>Cadastrar</button>
             </form>
             <button id="export-btn" disabled>Exportar para .xlsx</button>
             <input type="file" id="import-btn" accept=".xlsx" disabled>
         </div>
         <div id="clientes-container">
+            <input type="text" id="cpf-pesquisa" placeholder="Digite o CPF para pesquisar">
             <button id="pesquisar-cpf-btn" disabled>Pesquisar por CPF</button>
             <button id="limpar-todos-btn">Limpar Todos os Dados</button>
-            <table id="clientes-table">
-                <thead>
-                    <tr>
-                        <th>CPF</th>
-                        <th>Nome Completo</th>
-                        <th>E-mail</th>
-                        <th>Telefone</th>
-                        <th>Endereço</th>
-                        <th>Cidade</th>
-                        <th>Estado</th>
-                    </tr>
-                </thead>
-                <tbody id="clientes-list"></tbody>
-            </table>
+            <div style="overflow-x: auto;">
+                <table id="clientes-table">
+                    <thead>
+                        <tr>
+                            <th>CPF</th>
+                            <th>Nome Completo</th>
+                            <th>E-mail</th>
+                            <th>Telefone</th>
+                            <th>Endereço</th>
+                            <th>Bairro</th>
+                            <th>CEP</th>
+                            <th>Cidade</th>
+                            <th>Estado</th>
+                            <th>Data</th>
+                            <th>Hora</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientes-list"></tbody>
+                </table>
+            </div>
         </div>
         <div id="feedback-container">
             <textarea id="feedback-message" placeholder="Digite seu feedback aqui"></textarea>

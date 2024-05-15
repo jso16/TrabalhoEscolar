@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function desbloquearComSenha() {
         const senhaDigitada = document.getElementById("senha").value.trim();
-        if (senhaDigitada === "12345") { // Substitua "12345" pela sua senha desejada
+        if (senhaDigitada === "12345") {
             senhaDesbloqueada = true;
             alert("Senha correta. Funcionalidades desbloqueadas!");
             desbloquearCampos();
@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function desbloquearCampos() {
-        const inputs = document.querySelectorAll("#cliente-form input");
+        const inputs = document.querySelectorAll("#cliente-form input, #cliente-form select");
         inputs.forEach(input => {
             input.disabled = !senhaDesbloqueada;
         });
@@ -60,46 +60,97 @@ document.addEventListener("DOMContentLoaded", function() {
         const nome = document.getElementById("nome").value;
         const email = document.getElementById("email").value;
         const telefone = document.getElementById("telefone").value;
-        const endereco = document.getElementById("endereco").value || "-";
-        const cidade = document.getElementById("cidade").value || "-";
-        const estado = document.getElementById("estado").value || "-";
+        const endereco = document.getElementById("endereco").value;
+        const bairro = document.getElementById("bairro").value;
+        const cep = document.getElementById("cep").value;
+        const cidade = document.getElementById("cidade").value;
+        const estado = document.getElementById("estado").value;
+        const data = document.getElementById("data").value;
+        const hora = document.getElementById("hora").value;
 
         const cliente = {
-            cpf: cpf,
-            nome: nome,
-            email: email,
-            telefone: telefone,
-            endereco: endereco,
-            cidade: cidade,
-            estado: estado
+            cpf,
+            nome,
+            email,
+            telefone,
+            endereco,
+            bairro,
+            cep,
+            cidade,
+            estado,
+            data,
+            hora
         };
-
-        const newRow = createRow(cliente);
-        clientesList.appendChild(newRow);
 
         storedClientes.push(cliente);
         localStorage.setItem("clientes", JSON.stringify(storedClientes));
 
+        const newRow = createRow(cliente);
+        clientesList.appendChild(newRow);
+
         form.reset();
     });
 
-    clientesList.addEventListener("click", function(event) {
-        if (event.target.classList.contains("delete-btn")) {
-            const row = event.target.closest("tr");
-            const cpf = row.querySelector("td:first-child").innerText;
-            const index = storedClientes.findIndex(cliente => cliente.cpf === cpf);
-            storedClientes.splice(index, 1);
+    function createRow(cliente) {
+        const row = document.createElement("tr");
+        
+        Object.keys(cliente).forEach(key => {
+            const cell = document.createElement("td");
+            cell.textContent = cliente[key];
+            row.appendChild(cell);
+        });
+
+        const actionCell = document.createElement("td");
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "Excluir";
+        deleteButton.addEventListener("click", function() {
+            storedClientes = storedClientes.filter(c => c.cpf !== cliente.cpf);
             localStorage.setItem("clientes", JSON.stringify(storedClientes));
             row.remove();
-        }
-    });
+        });
+        actionCell.appendChild(deleteButton);
+        row.appendChild(actionCell);
+
+        return row;
+    }
 
     document.getElementById("export-btn").addEventListener("click", function() {
-        exportToExcel();
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.json_to_sheet(storedClientes);
+        XLSX.utils.book_append_sheet(wb, ws, "Clientes");
+        XLSX.writeFile(wb, "clientes.xlsx");
     });
 
     document.getElementById("import-btn").addEventListener("change", function(event) {
-        importFromExcel(event);
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: "array" });
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            const importedClientes = XLSX.utils.sheet_to_json(worksheet);
+
+            importedClientes.forEach(cliente => {
+                storedClientes.push(cliente);
+                const newRow = createRow(cliente);
+                clientesList.appendChild(newRow);
+            });
+
+            localStorage.setItem("clientes", JSON.stringify(storedClientes));
+        };
+        reader.readAsArrayBuffer(file);
+    });
+
+    document.getElementById("limpar-todos-btn").addEventListener("click", function() {
+        const confirmacao = confirm("Tem certeza de que deseja limpar todos os dados?");
+        if (confirmacao) {
+            localStorage.removeItem("clientes");
+            while (clientesList.firstChild) {
+                clientesList.removeChild(clientesList.firstChild);
+            }
+            storedClientes = [];
+        }
     });
 
     document.getElementById("pesquisar-cpf-btn").addEventListener("click", function() {
@@ -111,9 +162,9 @@ document.addEventListener("DOMContentLoaded", function() {
             const cpfCell = row.querySelector("td:first-child");
             const cpfValue = cpfCell.innerText.replace(/[^\d]/g, '');
             if (cpfValue === cpfToSearch.replace(/[^\d]/g, '')) {
-                row.style.display = "";
+                row.style.display = ""; // Exibir a linha se o CPF for encontrado
             } else {
-                row.style.display = "none";
+                row.style.display = "none"; // Ocultar a linha se o CPF não for encontrado
             }
         });
 
@@ -124,94 +175,11 @@ document.addEventListener("DOMContentLoaded", function() {
         mostrarTodosBtn.addEventListener("click", mostrarTodosClientes);
     });
 
-    document.getElementById("limpar-todos-btn").addEventListener("click", function() {
-        if (confirm("Tem certeza que deseja limpar todos os dados cadastrados?")) {
-            localStorage.removeItem("clientes");
-            storedClientes = [];
-            while (clientesList.firstChild) {
-                clientesList.removeChild(clientesList.firstChild);
-            }
-        }
-    });
-
     function mostrarTodosClientes() {
         const rows = clientesList.querySelectorAll("tr");
         rows.forEach(row => {
             row.style.display = "";
         });
         document.getElementById("mostrar-todos-btn").remove();
-    }
-
-    function exportToExcel() {
-        const data = [["CPF", "Nome Completo", "E-mail", "Telefone", "Endereço", "Cidade", "Estado"]];
-
-        storedClientes.forEach(cliente => {
-            const rowData = [];
-            Object.values(cliente).forEach(value => {
-                rowData.push(value);
-            });
-            data.push(rowData);
-        });
-
-        const wb = XLSX.utils.book_new();
-        const ws = XLSX.utils.aoa_to_sheet(data);
-        XLSX.utils.book_append_sheet(wb, ws, "Clientes");
-        const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-        const blob = new Blob([wbout], { type: "application/octet-stream" });
-
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "clientes.xlsx";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-
-    function importFromExcel(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            const data = new Uint8Array(event.target.result);
-            const workbook = XLSX.read(data, { type: "array" });
-            const sheet = workbook.Sheets[workbook.SheetNames[0]];
-            const jsonData = XLSX.utils.sheet_to_json(sheet);
-
-            const formattedData = jsonData.map(row => ({
-                cpf: row["CPF"] || "",
-                nome: row["Nome Completo"] || "",
-                email: row["E-mail"] || "",
-                telefone: row["Telefone"] || "",
-                endereco: row["Endereço"] || "-",
-                cidade: row["Cidade"] || "-",
-                estado: row["Estado"] || "-"
-            }));
-
-            storedClientes = formattedData;
-            localStorage.setItem("clientes", JSON.stringify(storedClientes));
-
-            clientesList.innerHTML = ""; // Limpa a tabela antes de importar os novos dados
-            storedClientes.forEach(cliente => {
-                const newRow = createRow(cliente);
-                clientesList.appendChild(newRow);
-            });
-        };
-        reader.readAsArrayBuffer(file);
-    }
-
-    function createRow(cliente) {
-        const newRow = document.createElement("tr");
-        newRow.innerHTML = `
-            <td>${cliente.cpf}</td>
-            <td>${cliente.nome}</td>
-            <td>${cliente.email}</td>
-            <td>${cliente.telefone}</td>
-            <td>${cliente.endereco}</td>
-            <td>${cliente.cidade}</td>
-            <td>${cliente.estado}</td>
-            <td><button class="delete-btn">Excluir</button></td>
-        `;
-        return newRow;
     }
 });

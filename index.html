@@ -6,6 +6,27 @@
     <title>Cadastro de Pessoas</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
+    <style>
+        .feedback-box {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .feedback-box p {
+            margin: 0;
+            font-size: 16px;
+        }
+        .feedback-box a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .feedback-box a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -60,9 +81,8 @@
                 </table>
             </div>
         </div>
-        <div id="feedback-container">
-            <textarea id="feedback-message" placeholder="Digite seu feedback aqui"></textarea>
-            <button id="enviar-feedback-btn">Enviar Feedback</button>
+        <div class="feedback-box">
+            <p>Seu Feedback é muito importante para nós: <a href="mailto:cadastro.oficial@hotmail.com">cadastro.oficial@hotmail.com</a></p>
         </div>
     </div>
     <script src="script.js"></script>
